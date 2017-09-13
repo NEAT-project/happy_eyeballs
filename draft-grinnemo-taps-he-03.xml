@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!-- This template is for creating an Internet Draft using xml2rfc,
+ which is available here: http://xml2rfc.ietf.org. -->
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!-- One method to get references from the online citation libraries.
+There has to be one entity for each item to be referenced. 
+An alternate method (rfc include) is described in the references. -->
+<!--<!ENTITY RFC2119 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">-->
+<!-- http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml-->
+<!ENTITY RFC2119 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.2119.xml">
+<!ENTITY RFC6555 SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml/reference.RFC.6555.xml">
+<!ENTITY I-D.narten-iana-considerations-rfc2434bis SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.narten-iana-considerations-rfc2434bis.xml">
+<!ENTITY I-D.wing-tsvwg-happy-eyeballs-sctp SYSTEM "http://xml2rfc.ietf.org/public/rfc/bibxml3/reference.I-D.draft-wing-tsvwg-happy-eyeballs-sctp-02.xml">]>
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+<!-- used by XSLT processors -->
+<!-- For a complete list and description of processing instructions (PIs), 
+ please see http://xml2rfc.ietf.org/authoring/README.html. -->
+<!-- Below are generally applicable Processing Instructions (PIs) that most I-Ds might want to use.
+ (Here they are set differently than their defaults in xml2rfc v1.32) -->
+<?rfc strict="yes" ?>
+<!-- give errors regarding ID-nits and DTD validation -->
+<!-- control the table of contents (ToC) -->
+<?rfc toc="yes"?>
+<!-- generate a ToC -->
+<?rfc tocdepth="3"?>
+<!-- the number of levels of subsections in ToC. default: 3 -->
+<!-- control references -->
+<?rfc symrefs="yes"?>
+<!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
+<?rfc sortrefs="yes" ?>
+<!-- sort the reference entries alphabetically -->
+<!-- control vertical white space 
+ (using these PIs as follows is recommended by the RFC Editor) -->
+<?rfc compact="yes" ?>
+<!-- do not start each main section on a new page -->
+<?rfc subcompact="yes" ?>
+<!-- do not keep one blank line between list items -->
+<!-- end of list of popular I-D processing instructions -->
+<?xml-stylesheet type="text/xsl" href="rfc2629.xslt"?>
+<rfc category="exp" docName="draft-grinnemo-taps-he-03" ipr="trust200902">
+  <!--	noModificationTrust200902 noDerivativesTrust200902 pre5378Trust200902">-->
+
+  <!-- updates="6298"> -->
+
+  <!-- ipr="full3978"> -->
+
+  <!-- category values: std, bcp, info, exp, and historic
+     ipr values: full3667, noModification3667, noDerivatives3667
+     you can add the attributes updates="NNNN" and obsoletes="NNNN" 
+     they will automatically be output with "(if approved)" -->
+
+  <!-- ***** FRONT MATTER ***** -->
+
+<front>
+   <!-- The abbreviated title is used in the page header - it is only necessary if the 
+	     full title is longer than 39 characters -->
+
+	<title>Happy Eyeballs for Transport Selection</title>
+
+	<author fullname="Karl-Johan Grinnemo" initials="K-J" surname="Grinnemo">
+	  <organization>Karlstad University</organization>
+      <address>
+         <postal>
+            <street>Universitetsgatan 2</street>
+			   <code>651 88</code>
+			   <city>Karlstad</city>
+			   <region></region>
+			   <country>Sweden</country>
+         </postal>
+         <phone>+46 54 700 24 40</phone>
+         <email>karl-johan.grinnemo@kau.se</email>
+      </address>
+   </author>
+
+	<author fullname="Anna Brunstrom" initials="A." surname="Brunstrom">
+      <organization>Karlstad University</organization>
+      <address>
+         <postal>
+            <street>Universitetsgatan 2</street>
+				<code>651 88</code>
+				<city>Karlstad</city>
+				<region></region>
+				<country>Sweden</country>
+         </postal>
+			<phone>+46 54 700 17 95</phone>
+			<email>anna.brunstrom@kau.se</email>
+      </address>
+	</author>
+
+	<author fullname="Per Hurtig" initials="P." surname="Hurtig">
+      <organization>Karlstad University</organization>
+      <address>
+         <postal>
+            <street>Universitetsgatan 2</street>
+            <code>651 88</code>
+            <city>Karlstad</city>
+            <region></region>
+            <country>Sweden</country>
+         </postal>
+         <phone>+46 54 700 23 35</phone>
+         <email>per.hurtig@kau.se</email>
+		</address>
+	</author>
+
+	<author fullname="Naeem Khademi" initials="N." surname="Khademi">
+      <organization>University of Oslo</organization>
+      <address>
+         <postal>
+            <street>PO Box 1080 Blindern</street>
+				<code>N-0316</code>
+				<city>Oslo</city>
+				<region></region>
+				<country>Norway</country>
+			</postal>
+			<phone></phone>
+			<email>naeemk@ifi.uio.no</email>
+		</address>
+	</author>
+  
+   <author fullname="Zdravko Bozakov" initials="Z." surname="Bozakov">
+      <organization>Dell EMC Research Europe</organization>
+      <address>
+         <postal>
+            <street>Ovens, Co.</street>
+            <code></code>
+            <city>Cork</city>
+            <region></region>
+            <country>Ireland</country>
+         </postal>
+         <phone>+353 21 4945733</phone>
+         <email>Zdravko.Bozakov@dell.com</email>
+      </address>
+   </author>
+
+	<date year="2017" month="June"/>
+	<area>Transport</area>
+	<workgroup>TAPS</workgroup>
+	<keyword>taps, transport services</keyword>
+
+	<abstract>
+      <t>Ideally, network applications should be able to select an appropriate transport solution from among available
+      transport solutions. However, at present, there is no agreed-upon way to do this. In fact, there is not even an
+      agreed-upon way for a source end host to determine if there is support for a particular transport along a network
+      path. This draft addresses these issues, by proposing a Happy Eyeballs framework. The proposed Happy Eyeballs
+      framework enables the selection of a transport solution that according to application requirements, pre-set policies,
+      and estimated network conditions is the most appropriate one. Additionally, the proposed framework makes it
+      possible for an application to find out whether a particular transport is supported along a network connection
+      towards a specific destination or not.
+   </t>
+	</abstract>
+</front>
+
+<middle>
+   <section title="Definitions" anchor='sec-def'>
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+      "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+      document are to be interpreted as described in <xref target="RFC2119">RFC 2119</xref>.</t>
+   </section>
+
+   <section anchor="sec-intro" title="Introduction">
+      <t>Information services on the Internet come in varying forms, such as web browsing, email, and on-demand multimedia.
+      The main motivation behind the design of next-generation computer and communications networks is to provide a universal
+      and easy access to these various types of information services on a single multi-service Internet. This means that all
+      forms of communications, e.g., video, voice, data and control signaling, along with all types of services -- from plain
+      text web pages to multimedia applications -- are bonded in a single-service platform through Internet technology. To
+      enable the next-generation networks, the TAPS Working Group suggests a decoupling between the transport service provided
+      to an application, and the transport stack providing this transport service: An application requests an appropriate
+      transport service on the basis of its transport requirements, and the available transport stack that best meets these
+      requirements is selected. In case the most preferred transport stack is not supported along the network path to the
+      destination, or is not supported by the end host, a less-preferred transport stack is selected instead. As a way to
+      realize the selection of transport stacks, this document suggests a generalization of the Happy Eyeballs (HE)
+      mechanism proposed in Wing et al. <xref target='RFC6555'></xref> which addresses the selection of complete transport
+      solutions, and which lends itself to arbitrary transport selection criterias. The proposed HE mechanism targets
+      connection-oriented transport solutions, and connectionless transport solutions provided they offer some reasonable way
+      to determine their successful use between endpoints.
+      </t>
+
+      <t>The HE mechanism was introduced as a means to promote the use of dual network stacks. Dual-stack client applications
+      should be encouraged to try setting up connections over IPv6 first, and fall back to using IPv4 if IPv6 connection attempts
+      fail. However, serializing tests for IPv6 and IPv4 connectivity can result in large connection latencies. HE for IPv6
+      minimizes the cost in delay by parallelizing attempts over IPv6 and IPv4. HE has also been proposed as an efficient way
+      to find out the optimal combination of IPv4/IPv6 and TCP/SCTP to use to connect to a server
+      <xref target='I-D.wing-tsvwg-happy-eyeballs-sctp'></xref>. The HE framework suggested in this document could be seen
+      as a natural continuation of this proposal.</t>
+   </section>
+
+   <section anchor="sec-problem" title="Problem Statement">
+      <t>Currently, there is no agreed-upon way for a source end host to select an appropriate transport service for a given
+      application. In fact, there is no common way for a source end-host to find out if a transport stack is supported along
+      a network path between itself and a destination end host. As a consequence, it has become increasingly difficult to
+      introduce new transport stacks, and several applications, including many web applications, run over TCP although there
+      are other transport protocols that better meet the requirements of these applications.</t>
+   </section>
+
+   <section anchor="sec-he-framework" title="The Happy Eyeballs Framework">
+      <t>
+      <figure align="center" anchor="fig-he-framework" title="The Happy Eyeballs Framework.">
+         <artwork align="center"> <![CDATA[                                       
+ +---------------+                      
+ |               |                      
+ |  Application  |                      
+ |               |                      
+ +-------+-------+                      
+         |                              
+ +-------v-------+     +---------------+
+ |               |     |               |
+ |   TAPS API    +----->               |
+ |               |     |               |
+ +---------------+     |    Policy     |
+                    +--|  Management   |
+ +---------------+  |  |               |
+ |   Transport   |<-+  |               |
+ |    Probing    |     |               |
+ |               +----->               |
+ +---------------+     +---------------+
+            ]]>
+         </artwork>
+      </figure>
+      </t>
+      <t>The generalized HE mechanism proposed in this draft is carried out within the framework depicted in
+      <xref target='fig-he-framework'></xref>. It comprises the following steps: 
+
+      <list style="numbers">
+         <t>The Policy Management component takes as input application requirements from the TAPS API, stored
+         information about previous connection attempts (e.g., whether previous connection attempts succeeded
+         or not), and network conditions and configurations. On the basis of this input and the policies
+         configured in the system, the Policy Management component creates a list of candidate transport
+         solutions, L, sorted in decreasing priority order. To be compliant with RFC 6555
+         <xref target='RFC6555'></xref>, the Policy Management component SHOULD, in those cases there are no
+         policies telling otherwise, following the host's address preference, something which usually means
+         giving preference to IPv6 over IPv4.</t>
+
+         <t>It is the responsibility of the Transport Probing component to select the most appropriate transport
+         solution. This is done by initiating connection attempts for each transport solution on L. To minimize
+         the number of connection attempts that are initiated, the Transport Probing component SHOULD cache the
+         outcome of connection attempts in a repository kept by the Policy Management component. The Policy
+         Management component SHOULD in turn only include those transport solutions on L that have not been
+         previously attempted, have valid successful connection-attempt cache entries, or have previously been
+         attempted but whose cached connection-attempt entries have expired. Cached connection-attempt results
+         SHOULD be valid for a configurable amount of time after which they SHOULD expire and have to be repeated.
+         The transport solutions on L are initiated in priority order. The difference in priority between two
+         consecutive candidates, C1 and C2, is translated according to some criteria to a delay, D. D then governs
+         the delay between the initiation of the connection attempts C1 and C2.</t>
+
+         <t>After the initiation of the connection attempts, the Transport Probing component waits for the first or
+         winning connection to be established, which becomes the selected transport solution. For the Transport
+         Probing component to be able to efficiently use the connection-attempt cache, already-initiated, non-winning
+         connection attempts SHOULD be given a fair chance to complete. In that way, the connection-attempt cache
+         will be provided with a fairly accurate knowledge of which transport solutions work and does not work against
+         frequently visited transport endpoints. Moreover, it MAY be beneficial to let those transport solutions which
+         have a higher priority than the winning transport solution, live a predetermined amount of time after their
+         establishment, since this enables the reuse of already established connections in later application requests.</t>
+      </list>
+      </t>
+   </section>
+
+   <section anchor="sec-design-impl-consid" title="Design and Implementation Considerations">
+      <t>This section discusses implementation issues that should be considered when a HE mechanism is designed and implemented
+      on the basis of the HE framework proposed in this document.</t>
+
+      <section anchor="sec-candidate" title="Candidate List Generation">
+              <t>
+              <figure align="center" anchor="fig-neat" title="Principle Design of the NEAT Happy Eyeballs Framework.">
+                 <artwork align="center"> <![CDATA[                                      
+ +---------------+                         
+ |               |                         
+ |  Application  |                         
+ |               |                         
+ +-------+-------+                         
+         |                                 
+ +-------v-------+     +---------------+   
+ |               |     |               |   
+ |   TAPS API    +--+--|Policy Manager |<-+
+ |               |  |  |               |  |
+ +---------------+  |  +-------^-------+  |
+                    |          |          |
+ +---------------+  |  +-------+-------+  |
+ |   Transport   |<-+  |    Policy     |  |
+ |    Probing    |     |  Information  |  |
+ |               +--+  |     Base      |  |
+ +---------------+  |  +---------------+  |
+                    |                     |
+                    |  +---------------+  |
+                    |  |Characteristics|  |
+                    +-->  Information  |--+
+                       |     Base      |   
+                       +---------------+   
+                    ]]>
+                 </artwork>
+              </figure>
+              </t>
+         <t>There are several ways in which the list of candidate transport solutions, L, could be created by the Policy
+         Management component. For example, L could be a list of all available transport solutions in an order that, except
+         for following the host's address preference, is arbitrary; another, more sophisticated, way of creating the list
+         of candidate transport solutions is the one employed by the NEAT System.</t>
+
+         <t>The NEAT System is developed as part of the EU Horizon 2020 project, "A New, Evolutive API and Transport-Layer
+         Architecture for the Internet" (NEAT) <xref target='NEAT-Webb'></xref>, and aims to provide a flexible and evolvable
+         transport system that aligns with the charter of the TAPS Working Group. In the NEAT System
+         <xref target='NEAT-Git'></xref>, the HE framework is realized as shown in <xref target='fig-neat'></xref>. As follows,
+         the Policy Management component comprises three components in the NEAT HE framework: a Policy Manager (PM), a Policy
+         Information Base (PIB), and a Characteristics Information Base (CIB). PIB is a repository that stores a collection of
+         policies that map application requests to transport solutions, i.e., map application requests to appropriately
+         configured transport protocols, and CIB is a repository that stores information about previous connection attempts,
+         available network interfaces, supported transport protocols etc. The PM takes as input application requirements from
+         the TAPS API, and information from PIB and CIB. On the basis of this input, the PM creates L.</t>
+      </section>
+
+      <section anchor="sec-caching" title="Caching">
+         <t>As pointed out in RFC 6555 <xref target='RFC6555'></xref>, a HE algorithm should not waste networking resources by
+         routinely making simultaneous connection attempts. To this end, the HE algorithm should cache the outcome of previous
+         connection attempts to the same peer. The cache lifetime is considered system dependent and should be set on a
+         case-by-case basis. 
+         
+         The impact and efficiency of the HE algorithm have been evaluated in <xref target='Papastergiou16'></xref>. The paper
+         suggests that caching significantly reduces the CPU load imposed by a HE mechanism. It also indicates that the
+         internal-memory footprint of a HE mechanism is essentially the same as for single-flow establishments.</t>
+      </section>
+ 
+      <section anchor="sec-concur-connect" title="Concurrent Connection Attempts">
+         <t>As mentioned in <xref target='sec-he-framework'></xref>, it is the responsibility of the Transport Probing component
+         to choose the most appropriate transport solution on the list of candidate transport solutions, L. Often this implies
+         that several transport solutions need to be tried out, something which should not be carried out sequentially, but
+         concurrently or partly overlapping depending on the transport-solution priorities. The way this is done is implementation
+         dependent and varies between platforms. The NEAT library <xref target='NEAT-Git'></xref>, which implements the HE
+         framework herein, is built around the libuv asynchronous I/O library <xref target='LIBUV'></xref> and uses an
+         event-based concurrency model to realize the concurrent initialization of connection attempts. The rationale behind
+         using an event-based concurrency model is at least twofold: The first is that correctly managing concurrency in
+         multi-threaded applications can be challenging with, for example, missing locks or deadlocks. The second is that
+         multi-threading typically offers little or no control over what is scheduled at a given momemt in time. Given the
+         complexity of building a general-purpose scheduler that works well in all cases, sometimes the OS will schedule work
+         in a manner that is less than optimal. Those in favor of threads argue that threads are a natural extension of sequential
+         programming in that it maps work to be executed with individual threads. Threads are also a well-known and understood
+         parts of OSes, and are mandatory for exploiting true CPU concurrency.</t>
+      </section>
+   </section>
+
+   <section anchor="sec-basic-example" title="Example Happy Eyeballs Scenario">
+      <t>Consider a scenario in which an IPv6-enabled client using the NEAT System wishes to setup a connection to a server.
+      Assume both the client and server support SCTP and TCP. The Policy Management is queried about feasible transport solutions
+      to connect to the server. In the NEAT System, this results in PM retrieving information about network connections against
+      this server from the CIB, e.g., supported transport protocols and the outcome of previous connection attempts. In our
+      scenario, the PM learns from the CIB that the server supports SCTP and TCP, and, for the sake of this example, let us assume
+      that the PM is also informed that previous connection attempts against this server, using both SCTP and TCP, were successful.
+      Next, the PM retrieves applicable policies from the PIB, and combines these policies with the previously retrieved CIB
+      information. We assume in this example that the SCTP transport solution has a higher priority than the TCP solution. As a
+      next step, the PM puts together the feasible candidate transport solutions in a list with SCTP over IPv6 placed at the
+      head of the list followed by TCP over IPv6, and supplies this list to the Transport Probing component. The Transport Probing
+      component traverses the candidate list, and initiates a connection attempt with SCTP against the server followed after a
+      short while (governed by the difference in priorities between the SCTP and TCP transport solutions) by a connection attempt
+      with TCP against the server. In our example, assume both connection attempts are successful, however, the SCTP connection
+      attempt completes before the TCP attempt. The Transport Probing component caches in the CIB the SCTP connection attempt as
+      successful, and returns the SCTP connection as the winning connection. When the TCP connection is established some time
+      later, the Transport Probing component caches that connection attempt as successful as well.</t>
+   </section>
+
+   <section anchor="IANA" title="IANA Considerations">
+      <t>XX RFC ED - PLEASE REMOVE THIS SECTION XXX</t>
+      <t>This memo includes no request to IANA.</t>
+   </section>
+
+   <section anchor="Security" title="Security Considerations">
+      <t>Security will be considered in future versions of this document.</t>
+   </section>
+
+   <section anchor="Acknowledgments" title="Acknowledgements">
+      <t>This work has received funding from the European Union's Horizon 2020 research and innovation programme under grant
+      agreement No. 644334 (NEAT). The views expressed are solely those of the author(s).</t>
+   </section>
+</middle>
+
+<!--  *****BACK MATTER ***** -->
+
+<back>
+   <!-- References split into informative and normative -->
+
+   <!-- There are 2 ways to insert reference entries from the citation libraries:
+        1. define an ENTITY at the top, and use "ampersand character"RFC2629; here (as shown)
+        2. simply use a PI "less than character"?rfc include="reference.RFC.2119.xml"?> here
+        (for I-Ds: include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")
+
+        Both are cited textually in the same manner: by using xref elements.
+        If you use the PI option, xml2rfc will, by default, try to find included files in the same
+        directory as the including file. You can also define the XML_LIBRARY environment variable
+        with a value containing a set of directories to search.  These can be either in the local
+        filing system or remote ones accessed by http (http://domain/dir/... ).-->
+
+<references title="Normative References">
+   &RFC2119;
+	&RFC6555;
+</references>
+
+<references title="Informative References">
+   &I-D.wing-tsvwg-happy-eyeballs-sctp;
+   <reference anchor="LIBUV">
+      <front>
+            <title>http://libuv.org</title>
+            <author>
+               <organization>libuv -- Asynchronous I/O Made Simple</organization>
+            </author>
+            <date month="March" year="2017" />
+      </front>
+   </reference>
+   <reference anchor="NEAT-Git">
+      <front>
+            <title>https://github.com/NEAT-project/neat</title>
+            <author>
+               <organization>A New, Evolutive API and Transport-Layer Architecture for the Internet (NEAT)</organization>
+            </author>
+            <date month="March" year="2017" />
+      </front>
+   </reference>
+   <reference anchor="NEAT-Webb">
+      <front>
+            <title>https://www.neat-project.org</title>
+            <author>
+               <organization>NEAT -- A New, Evolutive API and Transport-Layer Architecture for the Internet</organization>
+            </author>
+            <date month="March" year="2017" />
+      </front>
+   </reference>
+	<reference anchor="Papastergiou16">
+      <front>
+         <title>On the Cost of Using Happy Eyeballs for Transport Protocol Selection</title>
+         <author initials="G." surname="Papastergiou" fullname="Georgios Papastergiou">
+            <organization> Simula Research Laboratory </organization>
+			</author>
+			<author initials="K-J" surname="Grinnemo" fullname="Karl-Johan Grinnemo">
+            <organization> Karlstad University </organization>
+			</author>
+         <author initials="A." surname="Brunstrom" fullname="Anna Brunstrom">
+            <organization> Karlstad University </organization>
+			</author>
+			<author initials="D." surname="Ros" fullname="David Ros">
+            <organization> Simula Research Laboratory </organization>
+			</author>
+			<author initials="M." surname="Tuexen" fullname="Michael Tuexen">
+            <organization> Fachhochschole Muenster </organization>
+			</author>
+			<author initials="N." surname="Khademi" fullname="Naeem Khademi">
+            <organization> Simula Research Laboratory </organization>
+			</author>
+			<author initials="P." surname="Hurtig" fullname="Per Hurtig">
+            <organization> Karlstad University </organization>
+			</author>
+			<date month="July" year="2016" />
+		</front>
+   </reference>
+</references>
+</back>
+</rfc>
